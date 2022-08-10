@@ -43,6 +43,17 @@ public class Setting extends Board {
 
     }
 
+    private boolean isDraw(char[][] newBoardGame) {
+        boolean isDraw = false;
+        if ((newBoardGame[0][0] == ' ') || (newBoardGame[0][1] == ' ') || (newBoardGame[0][2] == ' ') ||
+                (newBoardGame[1][0] == ' ') || (newBoardGame[1][1] == ' ') || (newBoardGame[1][2] == ' ') ||
+                (newBoardGame[2][0] == ' ') || (newBoardGame[2][1] == ' ') || (newBoardGame[2][2] == ' ')) {
+            isDraw = true;
+            return isDraw;
+        }
+        return isDraw;
+    }
+
     private void setPlayer1IndexMove(int index) {
         this.player1IndexMove.add(index);
     }
@@ -57,17 +68,6 @@ public class Setting extends Board {
 
     private ArrayList getPlayer2IndexMove() {
         return this.player2IndexMove;
-    }
-
-    private boolean isDraw() {
-        boolean isDraw = true;
-        if ((newBoardGame[0][0] == ' ') || (newBoardGame[0][1] == ' ') || (newBoardGame[0][2] == ' ') ||
-                (newBoardGame[1][0] == ' ') || (newBoardGame[1][1] != ' ') || (newBoardGame[1][2] == ' ') ||
-                (newBoardGame[2][0] == ' ') || (newBoardGame[2][1] == ' ') || (newBoardGame[2][2] == ' ')) {
-            isDraw = false;
-            return isDraw;
-        }
-        return isDraw;
     }
 
     private boolean whoPlayerwin(char symbol) {
@@ -117,7 +117,7 @@ public class Setting extends Board {
         player1Name = userInput.nextLine();
         player1.setName(player1Name);
 
-        System.out.print("\nEnter player choise [X/O]: ");
+        System.out.print("\nEnter player choice [X/O]: ");
         player1Symbol = userInput.nextLine();
 
         System.out.print("\nEnter player name    : ");
@@ -129,11 +129,9 @@ public class Setting extends Board {
         if (player1Symbol.equalsIgnoreCase("X")) {
             player1.setSymbolX('X');
             player2.setSymbolO('O');
-
             while (true) {
 
-                if (player1IndexMove.size() < 4 && player2IndexMove.size() < 4) {
-
+                if (player1IndexMove.size() + player2IndexMove.size() <= 9) {
                     System.out.print("\n" + player1.getName() + " turn" + " [1-9] : ");
                     player1Index = userInput.nextInt();
                     setPlayer1IndexMove(player1Index);
@@ -142,8 +140,7 @@ public class Setting extends Board {
                     player2Index = userInput.nextInt();
                     setPlayer2IndexMove(player2Index);
 
-                    if (!getPlayer1IndexMove().contains(player2Index)
-                            || !getPlayer2IndexMove().contains(player1Index)) {
+                    if (!getPlayer1IndexMove().contains(player2Index)) {
 
                         playerMove(player1Index, player1.getSymbolX());
                         playerMove(player2Index, player2.getSymbolO());
@@ -152,9 +149,28 @@ public class Setting extends Board {
                         System.out.println();
                         createBoardGame();
 
+                        if (whoPlayerwin(player1.getSymbolX())) {
+                            System.out.println();
+                            ConsoleChat.congratulations(player1.getName());
+                            ConsoleChat.niceTry(player2.getName());
+                            break;
+                        } else if (whoPlayerwin(player2.getSymbolO())) {
+                            System.out.println();
+                            ConsoleChat.congratulations(player2.getName());
+                            ConsoleChat.niceTry(player1.getName());
+                            break;
+                        }
+
+                    } else if (getPlayer1IndexMove().contains(player2Index) ||
+                            getPlayer1IndexMove().contains(player1Index) ||
+                            getPlayer2IndexMove().contains(player2Index) ||
+                            getPlayer2IndexMove().contains(player1Index)) {
+
+                        System.err.println("\nCan't duplicate index");
+
                     } else {
 
-                        while (getPlayer1IndexMove().contains(player2Index)
+                        while (getPlayer1IndexMove().contains(player1Index)
                                 && getPlayer2IndexMove().contains(player1Index)) {
 
                             System.out.println("Can't input same index");
@@ -166,14 +182,30 @@ public class Setting extends Board {
                             player2Index = userInput.nextInt();
                             setPlayer2IndexMove(player2Index);
 
-                            if (!getPlayer1IndexMove().contains(player2Index)
-                                    || !getPlayer2IndexMove().contains(player1Index)) {
+                            if (getPlayer1IndexMove().contains(player2Index)
+                                    || getPlayer2IndexMove().contains(player1Index)
+                                    || getPlayer1IndexMove().contains(player1Index)
+                                    || getPlayer2IndexMove().contains(player2Index)) {
+
                                 playerMove(player1Index, player1.getSymbolX());
                                 playerMove(player2Index, player2.getSymbolO());
                                 clearScreen();
                                 displayTemplateBoard();
                                 System.out.println();
                                 createBoardGame();
+
+                                if (whoPlayerwin(player1.getSymbolX())) {
+                                    System.out.println();
+                                    ConsoleChat.congratulations(player1.getName());
+                                    ConsoleChat.niceTry(player2.getName());
+                                    break;
+                                } else if (whoPlayerwin(player2.getSymbolO())) {
+                                    System.out.println();
+                                    ConsoleChat.congratulations(player2.getName());
+                                    ConsoleChat.niceTry(player1.getName());
+                                    break;
+                                }
+
                             } else {
                                 clearScreen();
                                 displayTemplateBoard();
@@ -210,7 +242,7 @@ public class Setting extends Board {
 
             while (true) {
 
-                if (player1IndexMove.size() < 4 && player2IndexMove.size() < 4) {
+                if (player1IndexMove.size() + player2IndexMove.size() <= 9) {
 
                     System.out.print("\n" + player1.getName() + " turn" + " [1-9] : ");
                     player2Index = userInput.nextInt();
@@ -220,8 +252,7 @@ public class Setting extends Board {
                     player1Index = userInput.nextInt();
                     setPlayer1IndexMove(player1Index);
 
-                    if (!getPlayer1IndexMove().contains(player2Index)
-                            || !getPlayer2IndexMove().contains(player1Index)) {
+                    if (!getPlayer1IndexMove().contains(player2Index)) {
 
                         playerMove(player2Index, player2.getSymbolX());
                         playerMove(player1Index, player1.getSymbolO());
@@ -230,10 +261,29 @@ public class Setting extends Board {
                         System.out.println();
                         createBoardGame();
 
+                        if (whoPlayerwin(player2.getSymbolX())) {
+                            System.out.println();
+                            ConsoleChat.congratulations(player2.getName());
+                            ConsoleChat.niceTry(player1.getName());
+                            break;
+                        } else if (whoPlayerwin(player1.getSymbolO())) {
+                            System.out.println();
+                            ConsoleChat.congratulations(player1.getName());
+                            ConsoleChat.niceTry(player2.getName());
+                            break;
+                        }
+
+                    } else if (getPlayer1IndexMove().contains(player2Index) ||
+                            getPlayer1IndexMove().contains(player1Index) ||
+                            getPlayer2IndexMove().contains(player2Index) ||
+                            getPlayer2IndexMove().contains(player1Index)) {
+
+                        System.err.println("\nCan't duplicate index");
+
                     } else {
 
-                        while (getPlayer1IndexMove().contains(player2Index)
-                                && getPlayer2IndexMove().contains(player1Index)) {
+                        while (getPlayer1IndexMove().contains(player1Index)
+                                && getPlayer1IndexMove().contains(player2Index)) {
 
                             System.out.println("Can't input same index");
                             System.out.print("\n" + player1.getName() + " turn" + " [1-9] : ");
@@ -244,14 +294,30 @@ public class Setting extends Board {
                             player1Index = userInput.nextInt();
                             setPlayer1IndexMove(player1Index);
 
-                            if (!getPlayer1IndexMove().contains(player2Index)
-                                    || !getPlayer2IndexMove().contains(player1Index)) {
+                            if (getPlayer1IndexMove().contains(player2Index)
+                                    || getPlayer2IndexMove().contains(player1Index)
+                                    || getPlayer1IndexMove().contains(player1Index)
+                                    || getPlayer2IndexMove().contains(player2Index)) {
+
                                 playerMove(player2Index, player2.getSymbolX());
                                 playerMove(player1Index, player1.getSymbolO());
                                 clearScreen();
                                 displayTemplateBoard();
                                 System.out.println();
                                 createBoardGame();
+
+                                if (whoPlayerwin(player2.getSymbolX())) {
+                                    System.out.println();
+                                    ConsoleChat.congratulations(player2.getName());
+                                    ConsoleChat.niceTry(player1.getName());
+                                    break;
+                                } else if (whoPlayerwin(player1.getSymbolO())) {
+                                    System.out.println();
+                                    ConsoleChat.congratulations(player1.getName());
+                                    ConsoleChat.niceTry(player2.getName());
+                                    break;
+                                }
+
                             } else {
                                 clearScreen();
                                 displayTemplateBoard();
