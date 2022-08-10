@@ -1,2 +1,0 @@
-bug dibagian overriding pion
-bug dibagian draw

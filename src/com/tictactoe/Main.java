@@ -7,7 +7,8 @@ public class Main extends ConsoleChat{
 
         Setting.clearScreen();
         wellcome();    
-        setting.playerTurn();        
+        setting.playerTurn(); 
+        goodBye();       
 
     }
 }
